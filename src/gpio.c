@@ -19,22 +19,33 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 SPDX-License-Identifier: MIT
 *************************************************************************************************/
 
-/** @file main.c
+/** @file gpio.c
  ** @brief Definición de la función principal del programa
  **/
 
 /* === Headers files inclusions =============================================================== */
 
-#include "main.h"
 #include "gpio.h"
+#include <string.h>
+#include <stddef.h>
+#include <config.h>
 
 /* === Macros definitions ====================================================================== */
 
-#define LED_ROJO_PORT 1
-
-#define LED_ROJO_BIT  7
+#ifndef GPIO_MAX_INSTANCES
+#define GPIO_MAX_INSTANCES 10
+#endif
 
 /* === Private data type declarations ========================================================== */
+
+struct gpio_s {
+    uint8_t port;
+    uint8_t bit;
+    bool output;
+#ifndef USE_DYNAMIC_MEM
+    bool used;
+#endif
+};
 
 /* === Private variable declarations =========================================================== */
 
@@ -46,12 +57,52 @@ SPDX-License-Identifier: MIT
 
 /* === Private function implementation ========================================================= */
 
+#ifndef USE_DYNAMIC_MEM
+static gpio_t allocateInstance() {
+    static struct gpio_s instances[GPIO_MAX_INSTANCES] = {0};
+
+    gpio_t result = NULL;
+    for (int index = 0; index < GPIO_MAX_INSTANCES; index++) {
+        if (!instances[index].used) {
+            result = &instances[index].used;
+            result->used = true;
+            break;
+        }
+    }
+    return result;
+}
+#endif
+
 /* === Public function implementation ========================================================== */
 
-int main(void) {
-    gpio_t red_led = gpioCreate(LED_ROJO_PORT, LED_ROJO_BIT);
-    gpioSetOutput(red_led, true);
-    gpioSetState(red_led, false);
+gpio_t gpioCreate(uint8_t port, uint8_t bit) {
+#ifdef USE_DYNAMIC_MEM
+    gpio_t self = malloc(sizeof(struct gpio_s));
+#else
+    gpio_t self = allocateInstance();
+#endif
+
+    if (self) {
+        self->port = port;
+        self->bit = bit;
+        self->output = false;
+    }
+    return self;
+}
+
+void gpioSetOutput(gpio_t self, bool output) {
+    self->output = output;
+    hal_gpio_set_direction(self->port, self->bit, output);
+}
+
+void gpioSetState(gpio_t self, bool state) {
+    if (self->output) {
+        hal_gpio_set_output(self->port, self->bit, output);
+    }
+}
+
+bool gpioGetState(gpio_t self) {
+    return hal_gpio_get_input(self->port, self->bit);
 }
 
 /* === End of documentation ==================================================================== */
