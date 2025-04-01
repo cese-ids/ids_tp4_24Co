@@ -29,13 +29,31 @@ SPDX-License-Identifier: MIT
 
 /* === Macros definitions ====================================================================== */
 
+/** @brief Máscara para apagar todos los LEDs */
+#define ALL_LEDS_OFF 0x0000
+
+/** @brief Diferencia entre el numero de led y el numero de bit */
+#define LEDS_TO_BIT_OFFSET 1
+
+/** @brief Constante con el primer bit en uno para generar una mascara */
+#define FIRST_BIT 1
+
 /* === Private data type declarations ========================================================== */
 
 /* === Private variable declarations =========================================================== */
 
+/** @brief Variable privada para almacenar la dirección del puerto de salida */
 static uint16_t * port_address;
 
 /* === Private function declarations =========================================================== */
+
+/**
+ * @brief Función privada para convertir el número de un led en una máscara de bits
+ *
+ * @param led Numero de led para el que se desea generar la masca de bits
+ * @return uint16_t Masca de bits con 1 en la posición correspondiente al led
+ */
+static uint16_t LedToMask(uint8_t led);
 
 /* === Public variable definitions ============================================================= */
 
@@ -43,18 +61,22 @@ static uint16_t * port_address;
 
 /* === Private function implementation ========================================================= */
 
+uint16_t LedToMask(uint8_t led) {
+    return (LED_BIT_ON << (led - LEDS_TO_BIT_OFFSET));
+}
+
 /* === Public function implementation ========================================================== */
 
 void LedsInit(uint16_t * direccion) {
     port_address = direccion;
-    *port_address = 0;
+    *port_address = ALL_LEDS_OFF;
 }
 
 void LedsTurnOnSingle(uint8_t led) {
-    *port_address = 0x0008;
+    *port_address |= LedToMask(led);
 }
 
 void LedsTurnOffSingle(uint8_t led) {
-    *port_address = 0x0000;
+    *port_address &= ~LedToMask(led);
 }
 /* === End of documentation ==================================================================== */
