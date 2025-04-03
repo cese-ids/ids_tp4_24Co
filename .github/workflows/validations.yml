@@ -26,18 +26,18 @@ jobs:
       - name: Run Format Validations
         uses: pre-commit/action@v3.0.0
       - name: Run Unit Tests
-        run: ceedling clobber gcov:all utils:gcov
-      - name: Test Report
+        run: ceedling clobber gcov:all
+      - name: Test Results Report
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: Ceedling Unit Tests
-          path: build/artifacts/gcov/report.xml
+          path: build/artifacts/gcov/junit_tests_report.xml
           reporter: jest-junit
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: build/artifacts/gcov/GcovCoverageCobertura.xml
+          filename: build/artifacts/gcov/gcovr/GcovCoverageCobertura.xml
           badge: true
           format: markdown
           hide_branch_rate: false
