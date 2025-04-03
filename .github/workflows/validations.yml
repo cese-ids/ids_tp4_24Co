@@ -16,6 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4.2"
@@ -44,7 +46,7 @@ jobs:
           hide_complexity: false
           indicators: true
           output: both
-          thresholds: "60 80"
+          thresholds: "75 90"
       - name: Output to Job Summary
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Add Coverage PR Comment
