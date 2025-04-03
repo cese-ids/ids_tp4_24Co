@@ -62,7 +62,7 @@ static uint16_t LedToMask(uint8_t led);
 /* === Private function implementation ========================================================= */
 
 uint16_t LedToMask(uint8_t led) {
-    return (LED_BIT_ON << (led - LEDS_TO_BIT_OFFSET));
+    return (FIRST_BIT << (led - LEDS_TO_BIT_OFFSET));
 }
 
 /* === Public function implementation ========================================================== */

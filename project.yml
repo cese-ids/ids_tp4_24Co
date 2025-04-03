@@ -96,8 +96,7 @@
   :release: []
 
 :plugins:
-  :load_paths:
-    - "#{Ceedling.load_path}"
+  :load_paths: []
   :enabled:
     - stdout_pretty_tests_report
     - module_generator
