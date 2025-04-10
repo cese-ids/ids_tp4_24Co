@@ -70,7 +70,7 @@ void test_todos_los_leds_inician_apagados(void) {
 //! @test Prender un LED individual
 void test_prender_led_individual(void) {
     LedsTurnOnSingle(4);
-    TEST_ASSERT_EQUAL_HEX16(0x0009, leds_virtuales);
+    TEST_ASSERT_EQUAL_HEX16(0x0008, leds_virtuales);
 }
 
 //! @test Apagar un LED individual.
